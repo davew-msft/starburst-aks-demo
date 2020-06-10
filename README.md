@@ -10,11 +10,21 @@ Login to the Azure Portal and open a `bash` CloudShell.  Run the following scrip
 
 # vars to change
 SUBSCRIPTION="davew demo"
-AKS_NAME="starburst" 
+AKS_NAME="starburst-demo" 
 RES_GROUP_NAME="starburstdemo"
-LOCATION="eastus"
+LOCATION="eastus2"
 VNET_NAME="aksvnet"
 SUBNET_NAME="starburst"
+
+az account set --subscription "$SUBSCRIPTION"
+
+# TODO vnet command, take defaults
+az network vnet create \
+  --name myVirtualNetwork \
+  --resource-group myResourceGroup \
+  --subnet-name default
+
+# TODO subnet command, take defaults
 
 SUBNET_RES_ID=$(az network vnet subnet list \
   --vnet-name $VNET_NAME \
@@ -24,49 +34,58 @@ SUBNET_RES_ID=$(az network vnet subnet list \
 az aks create --resource-group $RES_GROUP_NAME \
   --name $AKS_NAME  \
   --enable-cluster-autoscaler \
+  --location $LOCATION \
   --node-count 5 \
   --min-count 5 \
   --max-count 8 \
-  --node-vm-size Standard_DS3_v2 \ 
+  --node-vm-size Standard_DS3_v2 \
   --generate-ssh-keys \
   --vnet-subnet-id $SUBNET_RES_ID \
   --network-plugin azure \
   --enable-addons monitoring
-  
-```
-
-To destroy the demo environment, just delete the resource group.  
-
-
-
-
 
 az aks get-credentials --resource-group ${RES_GROUP_NAME} --name ${AKS_NAME}
-mv signed_trial.license signed.license
 
+#to check status
+kubectl get nodes 
 
-2.     Add Starburst license:
+kubectl apply -f https://starburstdata.s3.us-east-2.amazonaws.com/mission-control/0.20/k8s/postgres.yaml
 
-##kubectl create secret generic presto-license --from-file signed.license
-
-3.     Apply files:
-
-kubectl apply -f https://starburstdata.s3.us-east-2.amazonaws.com/mission-control/0.18/k8s/postgres.yaml
-
-kubectl apply -f https://starburstdata.s3.us-east-2.amazonaws.com/mission-control/0.18/k8s/missioncontrol.yaml
+kubectl apply -f https://starburstdata.s3.us-east-2.amazonaws.com/mission-control/0.20/k8s/missioncontrol.yaml
 
 kubectl get pods
 
+# need EXTERNAL-IP for LoadBalancer
 kubectl get svc
 
-now we do mission control setup
-    adls to write
-    blob to read
+then go to ip:5042
 
 
 admin/admin
 
 Password01!!
+
+```
+
+
+
+
+
+now we do mission control setup
+  Data sources
+    adls to write
+    call it lake
+      davewdemodata
+
+create a cluster to test
+
+
+    internal metastore, ephemeral
+    blob to read
+davewdemoblobs 
+
+
+
 
 kubectl get pods
 demo for later:  HPA with vmscalesets 
@@ -103,5 +122,5 @@ create table hive.adlsgen2.airline as select * from airline_oltp.dbo.airline lim
 tnatssb
 Manish-starburst
 
-
+To destroy the demo environment, just delete the resource group.  
 ```
