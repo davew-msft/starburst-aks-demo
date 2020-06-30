@@ -105,11 +105,21 @@ select * from tpch.sf1.customer limit 10
 
 drop schema hive.adlsgen2
 
+create schema hive.adlsgen2  WITH (location = 'abfs://starburst@davewdemodata.dfs.core.windows.net/');
+create table hive.adlsgen2.customer as select * from tpch.sf1.customer;
+create table hive.adlsgen2.lineitem as select * from tpch.sf1.lineitem;
 
-create schema hive.adlsgen2  WITH (location = 'abfs://tpch-10gb@davewdemodata.dfs.core.windows.net/presto');
 
+select * from hive.adlsgen2.customer;
 
-create table hive.adlsgen2.customer as select * from tpch.sf1.customer 
+create table hive.adlsgen2.lineitem as select * from tpch.sf1.lineitem;
+create table hive.adlsgen2.nation as select * from tpch.sf1.nation;
+create table hive.adlsgen2.orders as select * from tpch.sf1.orders;
+create table hive.adlsgen2.part as select * from tpch.sf1.part;
+create table hive.adlsgen2.partsupp as select * from tpch.sf1.partsupp;
+create table hive.adlsgen2.region as select * from tpch.sf1.region;
+create table hive.adlsgen2.supplier as select * from tpch.sf1.supplier;
+
 
 sql server query federation example
 
